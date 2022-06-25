@@ -12,8 +12,6 @@ type Window struct {
 	Game   *Game
 }
 
-var prevFrame int64 = 0
-
 func NewGameWindow(app *gtk.Application) *Window {
 	// Create GTK drawing area to draw the game on
 	var da = gtk.NewDrawingArea()
@@ -63,5 +61,8 @@ func setupEventHandlers(window Window) {
 func setupKeyEventHandlers(window Window, controller *gtk.EventControllerKey) {
 	controller.ConnectKeyPressed(func(keyval, keycode uint, state gdk.ModifierType) (ok bool) {
 		return window.Game.ProcessKeyPress(keycode, state)
+	})
+	controller.ConnectKeyReleased(func(keyval, keycode uint, state gdk.ModifierType) {
+		window.Game.ProcessKeyRelease(keycode, state)
 	})
 }

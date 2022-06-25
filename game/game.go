@@ -68,3 +68,9 @@ func (g *Game) ProcessKeyPress(keyId uint, state gdk.ModifierType) (ok bool) {
 	}
 	return true
 }
+
+func (g *Game) ProcessKeyRelease(keyId uint, state gdk.ModifierType) {
+	for _, gameObject := range g.gameState {
+		gameObject.HandleKeyRelease(keyId, state)
+	}
+}

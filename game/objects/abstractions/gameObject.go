@@ -9,6 +9,7 @@ type IAbstractObject interface {
 	Draw(ctx *cairo.Context)
 	Update()
 	HandleKeyPress(keyId uint, state gdk.ModifierType)
+	HandleKeyRelease(keyId uint, state gdk.ModifierType)
 }
 
 type AbstractObject struct {

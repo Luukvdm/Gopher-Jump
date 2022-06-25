@@ -31,3 +31,5 @@ func (platform *Platform) Update() {
 }
 func (platform *Platform) HandleKeyPress(keyId uint, state gdk.ModifierType) {
 }
+func (platform *Platform) HandleKeyRelease(keyId uint, state gdk.ModifierType) {
+}
