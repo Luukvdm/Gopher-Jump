@@ -1,56 +1,67 @@
 package game
 
 import (
-	"github.com/gotk3/gotk3/cairo"
-	"github.com/gotk3/gotk3/gdk"
-	"github.com/gotk3/gotk3/gtk"
+	"github.com/diamondburned/gotk4/pkg/cairo"
+	"github.com/diamondburned/gotk4/pkg/gdk/v4"
+	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
 type Window struct {
-	Window *gtk.Window
+	Window *gtk.ApplicationWindow
 	Canvas *gtk.DrawingArea
-	Game Game
+	Game   *Game
 }
 
 var prevFrame int64 = 0
 
-func NewGameWindow() Window {
-	var win, _ = gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
-	var game = NewGame()
+func NewGameWindow(app *gtk.Application) *Window {
+	// Create GTK drawing area to draw the game on
+	var da = gtk.NewDrawingArea()
+	da.AddTickCallback(tick)
 
-	var da, _ = gtk.DrawingAreaNew()
-
-	win.Add(da)
-	win.SetTitle("Arrow keys")
-	win.Connect("destroy", gtk.MainQuit)
+	// Create GTK window
+	var win = gtk.NewApplicationWindow(app)
+	win.SetChild(da)
+	win.SetTitle("Jumper")
 	win.SetSizeRequest(1024, 720)
 	win.SetResizable(false)
-	win.ShowAll()
-
 	win.AddTickCallback(tick)
 
+	// Create game instance
+	var game = NewGame()
 	var gameWin = Window{win, da, game}
 	gameWin.Canvas.SetSizeRequest(1024, 720)
+
+	// Setup key controller
+	keyCtrl := gtk.NewEventControllerKey()
+	setupKeyEventHandlers(gameWin, keyCtrl)
+	gameWin.Window.AddController(keyCtrl)
+	// Setup other event handlers
 	setupEventHandlers(gameWin)
 
-	return gameWin
+	gameWin.Window.Show()
+
+	return &gameWin
 }
 
-func tick(widget *gtk.Widget, clock *gdk.FrameClock) bool {
-	widget.QueueDraw()
+func tick(widgetter gtk.Widgetter, frameClock gdk.FrameClocker) bool {
+	switch w := widgetter.(type) {
+	case *gtk.DrawingArea:
+		w.QueueDraw()
+	}
 
 	return true
 }
 
 func setupEventHandlers(window Window) {
 	// Draw
-	window.Canvas.Connect("draw", func(da *gtk.DrawingArea, ctx *cairo.Context) {
+	window.Canvas.SetDrawFunc(func(da *gtk.DrawingArea, ctx *cairo.Context, width, height int) {
 		window.Game.Draw(ctx)
-	})
-
-	window.Window.Connect("key-press-event", func(win *gtk.Window, event *gdk.Event) {
-		var keyEvent = &gdk.EventKey{Event: event}
-		window.Game.ProcessKeyPress(keyEvent.KeyVal())
 	})
 }
 
+func setupKeyEventHandlers(window Window, controller *gtk.EventControllerKey) {
+	controller.ConnectKeyPressed(func(keyval, keycode uint, state gdk.ModifierType) (ok bool) {
+		return window.Game.ProcessKeyPress(keycode, state)
+	})
+}

@@ -1,14 +1,20 @@
 package main
 
 import (
-	"github.com/gotk3/gotk3/gtk"
+	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	"github.com/luukvdm/jumper/game"
+	"os"
 )
 
+const appID = "com.github.luukvdm.jumper"
+
 func main() {
-	gtk.Init(nil)
+	gtk.Init()
 
-	var _ = game.NewGameWindow()
+	app := gtk.NewApplication(appID, 0)
+	app.ConnectActivate(func() { game.NewGameWindow(app) })
 
-	gtk.Main()
+	if code := app.Run(os.Args); code > 0 {
+		os.Exit(code)
+	}
 }
