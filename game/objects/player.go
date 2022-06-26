@@ -7,6 +7,15 @@ import (
 	"github.com/luukvdm/jumper/game/objects/abstractions"
 )
 
+const (
+	movementStep = 10
+	maxSpeed     = 25
+	jumpVelocity = 13
+	mass         = 50
+	playerWidth  = 50
+	playerHeight = 50
+)
+
 type Player struct {
 	*abstractions.AbstractObject
 	isMovingRight bool
@@ -14,9 +23,8 @@ type Player struct {
 }
 
 func NewPlayer(objId int, locX float64, locY float64) *Player {
-	var playerSize float64 = 50
 
-	var playerObject = abstractions.NewAbstractObject(objId, abstractions.Vector{X: locX, Y: locY}, playerSize, playerSize, 50, false, false)
+	var playerObject = abstractions.NewAbstractObject(objId, abstractions.Vector{X: locX, Y: locY}, playerWidth, playerHeight, mass, false, false)
 	var player = Player{
 		AbstractObject: playerObject,
 		isMovingLeft:   false,
@@ -26,11 +34,6 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 	player.AbstractObject.IAbstractObject = &player
 	return &player
 }
-
-const (
-	movementStep = 10
-	maxSpeed     = 10
-)
 
 func (player *Player) Draw(ctx *cairo.Context) {
 	ctx.SetSourceRGB(255, 0, 0)
@@ -103,7 +106,7 @@ func (player *Player) Update(objects []*abstractions.AbstractObject) {
 func (player *Player) Jump() {
 	player.BounceVertical()
 	if player.Velocity.Y <= 0 {
-		player.Velocity.Y = -10
+		player.Velocity.Y = -jumpVelocity
 	}
 }
 
