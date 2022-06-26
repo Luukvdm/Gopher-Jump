@@ -9,16 +9,19 @@ import (
 
 type Player struct {
 	*abstractions.AbstractObject
-	unitSize      float64
 	isMovingRight bool
 	isMovingLeft  bool
 }
 
-func NewPlayer(locX float64, locY float64) *Player {
+func NewPlayer(objId int, locX float64, locY float64) *Player {
 	var playerSize float64 = 50
 
-	var playerObject = abstractions.NewAbstractObject(abstractions.Vector{X: locX, Y: locY}, 50)
-	var player = Player{playerObject, playerSize, false, false}
+	var playerObject = abstractions.NewAbstractObject(objId, abstractions.Vector{X: locX, Y: locY}, playerSize, playerSize, 50, false, false)
+	var player = Player{
+		AbstractObject: playerObject,
+		isMovingLeft:   false,
+		isMovingRight:  false,
+	}
 
 	player.AbstractObject.IAbstractObject = &player
 	return &player
@@ -26,25 +29,29 @@ func NewPlayer(locX float64, locY float64) *Player {
 
 const (
 	movementStep = 10
+	maxSpeed     = 10
 )
 
 func (player *Player) Draw(ctx *cairo.Context) {
-	var abstObj = player.AbstractObject
 	ctx.SetSourceRGB(255, 0, 0)
-	ctx.Rectangle(abstObj.Location.X, abstObj.Location.Y, player.unitSize, player.unitSize)
+	ctx.Rectangle(player.Location.X, player.Location.Y, player.Width, player.Height)
 	ctx.Fill()
 }
 
-func (player *Player) Update() {
-	if player.Location.Y < 0 {
+func (player *Player) Update(objects []*abstractions.AbstractObject) {
+	oldLocation := player.Location
+	bounced := false
+
+	if player.Location.Y+player.Height > 720 {
+		// Player is on the floor
+		player.Location.Y = 720 - player.Height
+		player.Jump()
+		bounced = true
+	} else if player.Location.Y < 0 {
+		// Player is on the ceiling
 		player.Location.Y = 0
 		player.BounceVertical()
-	}
-
-	if player.Location.Y+player.unitSize > 720 {
-		player.Location.Y = 720 - player.unitSize
-		player.BounceVertical()
-		// player.ApplyForce(abstractions.Vector{Y: -2})
+		bounced = true
 	}
 
 	if player.isMovingLeft && !player.isMovingRight {
@@ -56,10 +63,48 @@ func (player *Player) Update() {
 
 	player.ApplyGravity()
 	player.Velocity.Add(player.Acceleration)
+	player.Velocity.Limit(maxSpeed)
+	newLoc := abstractions.VectorAdd(player.Location, player.Velocity)
+
+	// Check if moving from the old location to the new location collides with any other game object
+	for _, gameObject := range objects {
+		// Don't collide with yourself
+		if gameObject.Id == player.Id {
+			continue
+		}
+
+		if gameObject.Collides {
+			// TODO
+		} else if gameObject.IsPlatform {
+			// Ignore platforms that aren't below the player
+			if gameObject.Location.X > (newLoc.X+(player.Width)) || (gameObject.Width+gameObject.Location.X) < newLoc.X {
+				// TODO continue the for loop in a cleaner way
+				continue
+			}
+
+			// Ignore platforms that aren't below the player
+			// Also don't do anything if the player has already bounced or is going up
+			if !bounced && player.Velocity.Y > 0 && gameObject.Location.Y < (newLoc.Y+player.Height) {
+				// Check if the player is currently on a platform
+				if (gameObject.Location.Y) >= (oldLocation.Y+player.Height) && (gameObject.Location.Y) <= (newLoc.Y+player.Height) {
+					player.Jump()
+					player.Location.Y = gameObject.Location.Y - player.Height
+					bounced = true
+				}
+			}
+		}
+	}
+
 	player.Location.Add(player.Velocity)
 	// Clear acceleration
-	// log.Printf("player acceleration: %f\n", player.Velocity)
 	player.Acceleration.MultiplyByScalar(0)
+}
+
+func (player *Player) Jump() {
+	player.BounceVertical()
+	if player.Velocity.Y <= 0 {
+		player.Velocity.Y = -10
+	}
 }
 
 func (player *Player) HandleKeyPress(keyId uint, state gdk.ModifierType) {
@@ -82,6 +127,7 @@ func (player *Player) HandleKeyPress(keyId uint, state gdk.ModifierType) {
 		*/
 	}
 }
+
 func (player *Player) HandleKeyRelease(keyId uint, state gdk.ModifierType) {
 	switch keyId {
 	case controls.KeyLeft:
