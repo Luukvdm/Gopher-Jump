@@ -14,14 +14,14 @@ func NewPlatform(objId int, x float64, y float64) *Platform {
 	var platformWidth float64 = 200
 	var platformHeight float64 = 25
 
-	var platformObject = abstractions.NewAbstractObject(objId, abstractions.Vector{X: x, Y: y}, platformWidth, platformHeight, 10, true, false)
-	var platform = Platform{platformObject}
+	platformObject := abstractions.NewAbstractObject(objId, abstractions.Vector{X: x, Y: y}, platformWidth, platformHeight, 10, true, false)
+	platform := Platform{platformObject}
 
 	platform.AbstractObject.IAbstractObject = &platform
 	return &platform
 }
 func (platform *Platform) Draw(ctx *cairo.Context) {
-	var abstObj = platform.AbstractObject
+	abstObj := platform.AbstractObject
 	ctx.SetSourceRGB(0, 0, 0)
 	ctx.Rectangle(abstObj.Location.X, abstObj.Location.Y, platform.Width, platform.Height)
 	ctx.Fill()

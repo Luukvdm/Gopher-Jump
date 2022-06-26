@@ -42,8 +42,8 @@ func NewAbstractObject(id int, location Vector, width float64, height float64, m
 }
 
 func (obj *AbstractObject) ApplyForce(force Vector) {
-	var m = obj.Mass * 0.5
-	var f = VectorDivideByScalar(force, m)
+	m := obj.Mass * 0.5
+	f := VectorDivideByScalar(force, m)
 	obj.Acceleration.Add(f)
 }
 

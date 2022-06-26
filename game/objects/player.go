@@ -23,9 +23,14 @@ type Player struct {
 }
 
 func NewPlayer(objId int, locX float64, locY float64) *Player {
-
-	var playerObject = abstractions.NewAbstractObject(objId, abstractions.Vector{X: locX, Y: locY}, playerWidth, playerHeight, mass, false, false)
-	var player = Player{
+	playerObject := abstractions.NewAbstractObject(
+		objId,
+		abstractions.Vector{X: locX, Y: locY},
+		playerWidth, playerHeight,
+		mass,
+		false, false,
+	)
+	player := Player{
 		AbstractObject: playerObject,
 		isMovingLeft:   false,
 		isMovingRight:  false,

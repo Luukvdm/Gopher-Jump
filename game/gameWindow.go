@@ -14,11 +14,11 @@ type Window struct {
 
 func NewGameWindow(app *gtk.Application) *Window {
 	// Create GTK drawing area to draw the game on
-	var da = gtk.NewDrawingArea()
+	da := gtk.NewDrawingArea()
 	da.AddTickCallback(tick)
 
 	// Create GTK window
-	var win = gtk.NewApplicationWindow(app)
+	win := gtk.NewApplicationWindow(app)
 	win.SetChild(da)
 	win.SetTitle("Jumper")
 	win.SetSizeRequest(1024, 720)
@@ -26,8 +26,8 @@ func NewGameWindow(app *gtk.Application) *Window {
 	win.AddTickCallback(tick)
 
 	// Create game instance
-	var game = NewGame()
-	var gameWin = Window{win, da, game}
+	game := NewGame()
+	gameWin := Window{win, da, game}
 	gameWin.Canvas.SetSizeRequest(1024, 720)
 
 	// Setup key controller

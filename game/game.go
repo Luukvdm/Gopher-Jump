@@ -18,12 +18,12 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	var game = Game{FPS: 60}
+	game := Game{FPS: 60}
 
 	// Create player
 	// TODO create add game object func or something
-	var player = objects.NewPlayer(0, 75, 15)
-	var platform = objects.NewPlatform(1, 50, 500)
+	player := objects.NewPlayer(0, 75, 15)
+	platform := objects.NewPlatform(1, 50, 500)
 
 	game.gameState = append(game.gameState, player.AbstractObject)
 	game.gameState = append(game.gameState, platform.AbstractObject)
@@ -49,8 +49,8 @@ func (g *Game) Draw(ctx *cairo.Context) {
 }
 
 func (g *Game) Tick(ctx *cairo.Context) {
-	var newTime = time.Now().UnixMilli()
-	var frameTime = newTime - g.currentTime
+	newTime := time.Now().UnixMilli()
+	frameTime := newTime - g.currentTime
 
 	g.currentTime = newTime
 	g.accumulator += frameTime
@@ -62,7 +62,7 @@ func (g *Game) Tick(ctx *cairo.Context) {
 		g.accumulator -= g.dt
 	}
 
-	// var alpha = g.accumulator / g.dt
+	// alpha := g.accumulator / g.dt
 	g.Draw(ctx)
 }
 
