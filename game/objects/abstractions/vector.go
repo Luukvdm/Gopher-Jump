@@ -56,6 +56,19 @@ func VectorDivideByScalar(vec Vector, s float64) Vector {
 	}
 }
 
+func (a *Vector) Normalize() {
+	a.MultiplyByScalar(1. / a.Length())
+}
+
+func (a *Vector) Limit(limit float64) {
+	if a.X > limit {
+		a.X = limit
+	}
+	if a.Y > limit {
+		a.Y = limit
+	}
+}
+
 func (a Vector) Dot(b Vector) float64 {
 	return a.X*b.X + a.Y*b.Y
 }
@@ -63,9 +76,3 @@ func (a Vector) Dot(b Vector) float64 {
 func (a Vector) Length() float64 {
 	return math.Sqrt(a.Dot(a))
 }
-
-func (a Vector) Normalize() {
-	a.MultiplyByScalar(1. / a.Length())
-}
-
-

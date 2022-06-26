@@ -10,7 +10,7 @@ import (
 
 type Game struct {
 	FPS         int64
-	gameState   []abstractions.IAbstractObject
+	gameState   []*abstractions.AbstractObject
 	currentTime int64
 	accumulator int64
 	dt          int64
@@ -22,11 +22,11 @@ func NewGame() *Game {
 
 	// Create player
 	// TODO create add game object func or something
-	var player = objects.NewPlayer(75, 15)
-	var platform = objects.NewPlatform(50, 500)
+	var player = objects.NewPlayer(0, 75, 15)
+	var platform = objects.NewPlatform(1, 50, 500)
 
-	game.gameState = append(game.gameState, player)
-	game.gameState = append(game.gameState, platform)
+	game.gameState = append(game.gameState, player.AbstractObject)
+	game.gameState = append(game.gameState, platform.AbstractObject)
 
 	game.currentTime = time.Now().UnixMilli()
 	game.accumulator = 0
@@ -38,10 +38,17 @@ func NewGame() *Game {
 
 func (g *Game) Update() {
 	for _, gameObject := range g.gameState {
-		gameObject.Update()
+		gameObject.Update(g.gameState)
 	}
 }
+
 func (g *Game) Draw(ctx *cairo.Context) {
+	for _, gameObject := range g.gameState {
+		gameObject.Draw(ctx)
+	}
+}
+
+func (g *Game) Tick(ctx *cairo.Context) {
 	var newTime = time.Now().UnixMilli()
 	var frameTime = newTime - g.currentTime
 
@@ -56,10 +63,7 @@ func (g *Game) Draw(ctx *cairo.Context) {
 	}
 
 	// var alpha = g.accumulator / g.dt
-
-	for _, gameObject := range g.gameState {
-		gameObject.Draw(ctx)
-	}
+	g.Draw(ctx)
 }
 
 func (g *Game) ProcessKeyPress(keyId uint, state gdk.ModifierType) (ok bool) {

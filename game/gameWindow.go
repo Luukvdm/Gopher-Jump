@@ -54,7 +54,7 @@ func tick(widgetter gtk.Widgetter, frameClock gdk.FrameClocker) bool {
 func setupEventHandlers(window Window) {
 	// Draw
 	window.Canvas.SetDrawFunc(func(da *gtk.DrawingArea, ctx *cairo.Context, width, height int) {
-		window.Game.Draw(ctx)
+		window.Game.Tick(ctx)
 	})
 }
 

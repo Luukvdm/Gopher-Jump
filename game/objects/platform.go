@@ -8,14 +8,14 @@ import (
 
 type Platform struct {
 	*abstractions.AbstractObject
-	width float64
 }
 
-func NewPlatform(x float64, y float64) *Platform {
+func NewPlatform(objId int, x float64, y float64) *Platform {
 	var platformWidth float64 = 200
+	var platformHeight float64 = 25
 
-	var platformObject = abstractions.NewAbstractObject(abstractions.Vector{X: x, Y: y}, 10)
-	var platform = Platform{platformObject, platformWidth}
+	var platformObject = abstractions.NewAbstractObject(objId, abstractions.Vector{X: x, Y: y}, platformWidth, platformHeight, 10, true, false)
+	var platform = Platform{platformObject}
 
 	platform.AbstractObject.IAbstractObject = &platform
 	return &platform
@@ -23,11 +23,15 @@ func NewPlatform(x float64, y float64) *Platform {
 func (platform *Platform) Draw(ctx *cairo.Context) {
 	var abstObj = platform.AbstractObject
 	ctx.SetSourceRGB(0, 0, 0)
-	ctx.Rectangle(abstObj.Location.X, abstObj.Location.Y, platform.width, 25)
+	ctx.Rectangle(abstObj.Location.X, abstObj.Location.Y, platform.Width, platform.Height)
 	ctx.Fill()
+	ctx.SetSourceRGB(255, 0, 0)
+	ctx.Rectangle(abstObj.Location.X, abstObj.Location.Y, platform.Width, 5)
+	ctx.Fill()
+	ctx.SetSourceRGB(0, 0, 0)
 }
 
-func (platform *Platform) Update() {
+func (platform *Platform) Update(objects []*abstractions.AbstractObject) {
 }
 func (platform *Platform) HandleKeyPress(keyId uint, state gdk.ModifierType) {
 }
