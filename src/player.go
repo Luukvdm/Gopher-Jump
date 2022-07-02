@@ -6,13 +6,12 @@ import (
 	"github.com/luukvdm/jumper/src/base_objects"
 	"github.com/luukvdm/jumper/src/controls"
 	"github.com/luukvdm/jumper/src/gui"
-	"log"
 )
 
 const (
 	movementStep = 10
 	maxSpeed     = 25
-	jumpVelocity = 13
+	jumpVelocity = 11
 	mass         = 50
 	playerWidth  = 50
 	playerHeight = 50
@@ -43,14 +42,14 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 	return &player
 }
 
-func (player *Player) Draw(ctx *cairo.Context) {
+func (player *Player) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	ctx.SetSourceRGB(255, 0, 0)
-	ctx.Rectangle(player.Location.X, player.Location.Y, player.Width, player.Height)
+	ctx.Rectangle(player.Location.X+offset.X, player.Location.Y+offset.Y, player.Width, player.Height)
 	ctx.Fill()
 }
 
-func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector) {
-	log.Printf("%f:%f", player.Location.X, player.Location.Y)
+func (player *Player) Update(objects []*base_objects.AbstractObject) {
+	// log.Printf("%f:%f", player.Location.X, player.Location.Y)
 	oldLocation := player.Location
 	bounced := false
 

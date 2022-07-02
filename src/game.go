@@ -4,6 +4,8 @@ import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
 	"github.com/luukvdm/jumper/src/base_objects"
+	"github.com/luukvdm/jumper/src/gui"
+	"log"
 	"time"
 )
 
@@ -23,8 +25,10 @@ func NewGame() *Game {
 
 	// Create some initial platforms
 	// TODO create add game object func or something
-	platform := NewPlatform(1, 50, 800)
-	game.gameState = append(game.gameState, platform.AbstractObject)
+	platformA := NewPlatform(1, 50, 800)
+	platformB := NewPlatform(2, 400, 500)
+	game.gameState = append(game.gameState, platformA.AbstractObject)
+	game.gameState = append(game.gameState, platformB.AbstractObject)
 
 	game.player = NewPlayer(0, 75, 500)
 	game.currentTime = time.Now().UnixMilli()
@@ -37,20 +41,27 @@ func NewGame() *Game {
 }
 
 func (g *Game) Update() {
-	g.player.Update(g.gameState, g.offset)
+	g.player.Update(g.gameState)
+
+	scrollBorder := gui.ScreenHeight * 0.25
+	if g.player.Location.Y+g.offset.Y < scrollBorder {
+		// Scroll the screen up
+		g.offset.Y += scrollBorder - g.player.Location.Y
+		log.Printf("player height: %f scroll border: %f scroll with: %f", g.player.Location.Y, scrollBorder, (scrollBorder - g.player.Location.Y))
+	}
 
 	// Update the screen offset
 	// if g.player.Location.Y <
 
 	for _, gameObject := range g.gameState {
-		gameObject.Update(g.gameState, g.offset)
+		gameObject.Update(g.gameState)
 	}
 }
 
 func (g *Game) Draw(ctx *cairo.Context) {
-	g.player.Draw(ctx)
+	g.player.Draw(ctx, g.offset)
 	for _, gameObject := range g.gameState {
-		gameObject.Draw(ctx)
+		gameObject.Draw(ctx, g.offset)
 	}
 }
 

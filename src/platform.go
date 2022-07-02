@@ -20,19 +20,15 @@ func NewPlatform(objId int, x float64, y float64) *Platform {
 	platform.AbstractObject.IAbstractObject = &platform
 	return &platform
 }
-func (platform *Platform) Draw(ctx *cairo.Context) {
+func (platform *Platform) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	abstObj := platform.AbstractObject
 	ctx.SetSourceRGB(0, 0, 0)
-	ctx.Rectangle(abstObj.Location.X, abstObj.Location.Y, platform.Width, platform.Height)
+	ctx.Rectangle(abstObj.Location.X+offset.X, abstObj.Location.Y+offset.Y, platform.Width, platform.Height)
 	ctx.Fill()
-	ctx.SetSourceRGB(255, 0, 0)
-	ctx.Rectangle(abstObj.Location.X, abstObj.Location.Y, platform.Width, 5)
-	ctx.Fill()
-	ctx.SetSourceRGB(0, 0, 0)
 }
 
-func (platform *Platform) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector) {
-	platform.Location.Y += offset.Y
+func (platform *Platform) Update(objects []*base_objects.AbstractObject) {
+	// platform.Location.Y += offset.Y
 }
 func (platform *Platform) HandleKeyPress(keyId uint, state gdk.ModifierType) {
 }

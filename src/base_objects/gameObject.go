@@ -3,11 +3,12 @@ package base_objects
 import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
+	"github.com/luukvdm/jumper/src/gui"
 )
 
 type IAbstractObject interface {
-	Draw(ctx *cairo.Context)
-	Update(objects []*AbstractObject, offset Vector)
+	Draw(ctx *cairo.Context, offset Vector)
+	Update(objects []*AbstractObject)
 	HandleKeyPress(keyId uint, state gdk.ModifierType)
 	HandleKeyRelease(keyId uint, state gdk.ModifierType)
 }
@@ -62,3 +63,11 @@ func (obj *AbstractObject) ApplyFriction() {
 func (obj *AbstractObject) BounceVertical() {
 	obj.Velocity.Y *= -1
 }
+
+func (obj *AbstractObject) OffsetLocation(offset Vector) (location Vector) {
+	return Vector{Y: offset.Y + (gui.ScreenHeight - location.Y), X: location.X + offset.X}
+}
+
+/* func (obj *AbstractObject) ActualLocation(offset Vector) (location Vector) {
+
+} */
