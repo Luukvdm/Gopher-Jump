@@ -1,4 +1,4 @@
-package abstractions
+package base_objects
 
 import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
@@ -7,7 +7,7 @@ import (
 
 type IAbstractObject interface {
 	Draw(ctx *cairo.Context)
-	Update(objects []*AbstractObject)
+	Update(objects []*AbstractObject, offset Vector)
 	HandleKeyPress(keyId uint, state gdk.ModifierType)
 	HandleKeyRelease(keyId uint, state gdk.ModifierType)
 }

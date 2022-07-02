@@ -1,10 +1,12 @@
-package objects
+package src
 
 import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
-	"github.com/luukvdm/jumper/game/controls"
-	"github.com/luukvdm/jumper/game/objects/abstractions"
+	"github.com/luukvdm/jumper/src/base_objects"
+	"github.com/luukvdm/jumper/src/controls"
+	"github.com/luukvdm/jumper/src/gui"
+	"log"
 )
 
 const (
@@ -17,15 +19,16 @@ const (
 )
 
 type Player struct {
-	*abstractions.AbstractObject
+	*base_objects.AbstractObject
 	isMovingRight bool
 	isMovingLeft  bool
 }
 
 func NewPlayer(objId int, locX float64, locY float64) *Player {
-	playerObject := abstractions.NewAbstractObject(
+	loc := base_objects.Vector{X: locX, Y: locY}
+	playerObject := base_objects.NewAbstractObject(
 		objId,
-		abstractions.Vector{X: locX, Y: locY},
+		loc,
 		playerWidth, playerHeight,
 		mass,
 		false, false,
@@ -46,13 +49,14 @@ func (player *Player) Draw(ctx *cairo.Context) {
 	ctx.Fill()
 }
 
-func (player *Player) Update(objects []*abstractions.AbstractObject) {
+func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector) {
+	log.Printf("%f:%f", player.Location.X, player.Location.Y)
 	oldLocation := player.Location
 	bounced := false
 
-	if player.Location.Y+player.Height > 720 {
+	if player.Location.Y+player.Height > gui.ScreenHeight {
 		// Player is on the floor
-		player.Location.Y = 720 - player.Height
+		player.Location.Y = gui.ScreenHeight - player.Height
 		player.Jump()
 		bounced = true
 	} else if player.Location.Y < 0 {
@@ -72,7 +76,7 @@ func (player *Player) Update(objects []*abstractions.AbstractObject) {
 	player.ApplyGravity()
 	player.Velocity.Add(player.Acceleration)
 	player.Velocity.Limit(maxSpeed)
-	newLoc := abstractions.VectorAdd(player.Location, player.Velocity)
+	newLoc := base_objects.VectorAdd(player.Location, player.Velocity)
 
 	// Check if moving from the old location to the new location collides with any other game object
 	for _, gameObject := range objects {

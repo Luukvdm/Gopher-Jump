@@ -1,4 +1,4 @@
-package game
+package gui
 
 import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
@@ -9,37 +9,47 @@ import (
 type Window struct {
 	Window *gtk.ApplicationWindow
 	Canvas *gtk.DrawingArea
-	Game   *Game
+	Game   IGame
 }
 
-func NewGameWindow(app *gtk.Application) *Window {
+type IGame interface {
+	Tick(ctx *cairo.Context)
+	ProcessKeyPress(keyId uint, state gdk.ModifierType) (ok bool)
+	ProcessKeyRelease(keyId uint, state gdk.ModifierType)
+}
+
+const (
+	ScreenWidth  = 720
+	ScreenHeight = 1024
+)
+
+func NewWindow(app *gtk.Application, game IGame) *Window {
 	// Create GTK drawing area to draw the game on
 	da := gtk.NewDrawingArea()
 	da.AddTickCallback(tick)
 
 	// Create GTK window
-	win := gtk.NewApplicationWindow(app)
-	win.SetChild(da)
-	win.SetTitle("Jumper")
-	win.SetSizeRequest(1024, 720)
-	win.SetResizable(false)
-	win.AddTickCallback(tick)
+	appWin := gtk.NewApplicationWindow(app)
+	appWin.SetChild(da)
+	appWin.SetTitle("Jumper")
+	appWin.SetSizeRequest(ScreenWidth, ScreenHeight)
+	appWin.SetResizable(false)
+	appWin.AddTickCallback(tick)
 
 	// Create game instance
-	game := NewGame()
-	gameWin := Window{win, da, game}
-	gameWin.Canvas.SetSizeRequest(1024, 720)
+	win := Window{appWin, da, game}
+	win.Canvas.SetSizeRequest(ScreenWidth, ScreenHeight)
 
 	// Setup key controller
 	keyCtrl := gtk.NewEventControllerKey()
-	setupKeyEventHandlers(gameWin, keyCtrl)
-	gameWin.Window.AddController(keyCtrl)
+	setupKeyEventHandlers(win, keyCtrl)
+	win.Window.AddController(keyCtrl)
 	// Setup other event handlers
-	setupEventHandlers(gameWin)
+	setupEventHandlers(win)
 
-	gameWin.Window.Show()
+	win.Window.Show()
 
-	return &gameWin
+	return &win
 }
 
 func tick(widgetter gtk.Widgetter, frameClock gdk.FrameClocker) bool {
@@ -52,7 +62,6 @@ func tick(widgetter gtk.Widgetter, frameClock gdk.FrameClocker) bool {
 }
 
 func setupEventHandlers(window Window) {
-	// Draw
 	window.Canvas.SetDrawFunc(func(da *gtk.DrawingArea, ctx *cairo.Context, width, height int) {
 		window.Game.Tick(ctx)
 	})

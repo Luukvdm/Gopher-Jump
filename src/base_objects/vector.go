@@ -1,4 +1,4 @@
-package abstractions
+package base_objects
 
 import (
 	"math"
