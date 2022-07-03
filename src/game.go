@@ -7,7 +7,6 @@ import (
 	"github.com/luukvdm/jumper/src/gui"
 	"log"
 	"math/rand"
-	"strconv"
 	"time"
 )
 
@@ -85,14 +84,6 @@ func (g *Game) Draw(ctx *cairo.Context) {
 	// :(
 	// https://github.com/diamondburned/gotk4/blob/5e908130e58f7314673b10f0c96a0662fcc5a1fa/pkg/cairo/text.go#L39
 
-	for i := 0; i < gui.ScreenWidth; i += 50 {
-		ctx.MoveTo(float64(i), 10)
-		ctx.ShowText(strconv.Itoa(i))
-	}
-	for i := 0; i < gui.ScreenHeight; i += 50 {
-		ctx.MoveTo(5, float64(i))
-		ctx.ShowText(strconv.Itoa(i))
-	}
 	g.player.Draw(ctx, g.offset)
 	for _, gameObject := range g.gameState {
 		gameObject.Draw(ctx, g.offset)
