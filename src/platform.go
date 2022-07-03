@@ -27,8 +27,8 @@ func (platform *Platform) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	ctx.Fill()
 }
 
-func (platform *Platform) Update(objects []*base_objects.AbstractObject) {
-	// platform.Location.Y += offset.Y
+func (platform *Platform) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector) {
+	// platform.Location.Y += offsetTarget.Y
 }
 func (platform *Platform) HandleKeyPress(keyId uint, state gdk.ModifierType) {
 }

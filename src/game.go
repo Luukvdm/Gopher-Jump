@@ -5,19 +5,19 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
 	"github.com/luukvdm/jumper/src/base_objects"
 	"github.com/luukvdm/jumper/src/gui"
-	"log"
 	"time"
 )
 
 type Game struct {
-	FPS         int64
-	player      *Player
-	gameState   []*base_objects.AbstractObject
-	currentTime int64
-	accumulator int64
-	dt          int64
-	t           int64
-	offset      base_objects.Vector
+	FPS          int64
+	player       *Player
+	gameState    []*base_objects.AbstractObject
+	currentTime  int64
+	accumulator  int64
+	dt           int64
+	t            int64
+	offsetTarget base_objects.Vector
+	offset       base_objects.Vector
 }
 
 func NewGame() *Game {
@@ -35,26 +35,33 @@ func NewGame() *Game {
 	game.accumulator = 0
 	game.dt = 1000 / game.FPS
 	game.t = 0
-	game.offset = base_objects.Vector{X: 0, Y: 0}
 
 	return &game
 }
 
 func (g *Game) Update() {
-	g.player.Update(g.gameState)
+	g.player.Update(g.gameState, g.offset)
 
 	scrollBorder := gui.ScreenHeight * 0.25
-	if g.player.Location.Y+g.offset.Y < scrollBorder {
+	if g.player.Location.Y+g.offsetTarget.Y < scrollBorder {
 		// Scroll the screen up
-		g.offset.Y += scrollBorder - g.player.Location.Y
-		log.Printf("player height: %f scroll border: %f scroll with: %f", g.player.Location.Y, scrollBorder, (scrollBorder - g.player.Location.Y))
+		g.offsetTarget.Y += scrollBorder - g.player.Location.Y
+		// log.Printf("player height: %f scroll border: %f scroll with: %f", g.player.Location.Y, scrollBorder, (scrollBorder - g.player.Location.Y))
 	}
 
-	// Update the screen offset
-	// if g.player.Location.Y <
+	if g.offsetTarget.Y > g.offset.Y {
+		g.offset.Y += 5
+	}
+
+	// TODO filter out platforms
+	/* lastPlatform := g.gameState[len(g.gameState)-1]
+	if lastPlatform.Location.Y-g.offset.Y < 400 {
+		platform := NewPlatform(2, 400, 800+g.offset.Y)
+		g.gameState = append(g.gameState, platform.AbstractObject)
+	} */
 
 	for _, gameObject := range g.gameState {
-		gameObject.Update(g.gameState)
+		gameObject.Update(g.gameState, g.offset)
 	}
 }
 

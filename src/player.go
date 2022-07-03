@@ -48,17 +48,17 @@ func (player *Player) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	ctx.Fill()
 }
 
-func (player *Player) Update(objects []*base_objects.AbstractObject) {
-	// log.Printf("%f:%f", player.Location.X, player.Location.Y)
+func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector) {
+	// log.Printf("%f:%f", player.Location.X+offset.X, player.Location.Y+offset.Y)
 	oldLocation := player.Location
 	bounced := false
 
-	if player.Location.Y+player.Height > gui.ScreenHeight {
+	if player.Location.Y+player.Height+offset.Y > gui.ScreenHeight {
 		// Player is on the floor
 		player.Location.Y = gui.ScreenHeight - player.Height
 		player.Jump()
 		bounced = true
-	} else if player.Location.Y < 0 {
+	} else if player.Location.Y+offset.Y < 0 {
 		// Player is on the ceiling
 		player.Location.Y = 0
 		player.BounceVertical()
