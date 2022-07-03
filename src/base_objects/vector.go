@@ -63,9 +63,13 @@ func (a *Vector) Normalize() {
 func (a *Vector) Limit(limit float64) {
 	if a.X > limit {
 		a.X = limit
+	} else if a.X < -limit {
+		a.X = -limit
 	}
 	if a.Y > limit {
 		a.Y = limit
+	} else if a.Y < -limit {
+		a.Y = -limit
 	}
 }
 

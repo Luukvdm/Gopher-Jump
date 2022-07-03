@@ -34,7 +34,7 @@ func NewWindow(app *gtk.Application, game IGame) *Window {
 	appWin.SetTitle("Jumper")
 	appWin.SetSizeRequest(ScreenWidth, ScreenHeight)
 	appWin.SetResizable(false)
-	appWin.AddTickCallback(tick)
+	// appWin.AddTickCallback(tick)
 
 	// Create game instance
 	win := Window{appWin, da, game}

@@ -5,6 +5,7 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
 	"github.com/luukvdm/jumper/src/base_objects"
 	"github.com/luukvdm/jumper/src/gui"
+	"strconv"
 	"time"
 )
 
@@ -25,8 +26,8 @@ func NewGame() *Game {
 
 	// Create some initial platforms
 	// TODO create add game object func or something
-	platformA := NewPlatform(1, 50, 800)
-	platformB := NewPlatform(2, 400, 500)
+	platformA := NewPlatform(1, 50, 200)
+	platformB := NewPlatform(2, 400, 400)
 	game.gameState = append(game.gameState, platformA.AbstractObject)
 	game.gameState = append(game.gameState, platformB.AbstractObject)
 
@@ -42,10 +43,11 @@ func NewGame() *Game {
 func (g *Game) Update() {
 	g.player.Update(g.gameState, g.offset)
 
-	scrollBorder := gui.ScreenHeight * 0.25
-	if g.player.Location.Y+g.offsetTarget.Y < scrollBorder {
+	scrollBorder := (gui.ScreenHeight + g.offset.Y) * 0.5
+	// log.Printf("border: %f player: %f", scrollBorder, g.player.Location.Y)
+	if g.player.Location.Y > scrollBorder {
 		// Scroll the screen up
-		g.offsetTarget.Y += scrollBorder - g.player.Location.Y
+		g.offsetTarget.Y = g.player.Location.Y - scrollBorder
 		// log.Printf("player height: %f scroll border: %f scroll with: %f", g.player.Location.Y, scrollBorder, (scrollBorder - g.player.Location.Y))
 	}
 
@@ -66,6 +68,26 @@ func (g *Game) Update() {
 }
 
 func (g *Game) Draw(ctx *cairo.Context) {
+	// Move 0,0 point to bottom left, instead of top left
+	ctx.Transform(&cairo.Matrix{
+		Xx: 1,
+		Yx: 0,
+		Xy: 0,
+		Yy: -1,
+		X0: 0,
+		Y0: gui.ScreenHeight + g.offset.Y,
+	})
+	// :(
+	// https://github.com/diamondburned/gotk4/blob/5e908130e58f7314673b10f0c96a0662fcc5a1fa/pkg/cairo/text.go#L39
+
+	for i := 0; i < gui.ScreenWidth; i += 50 {
+		ctx.MoveTo(float64(i), 10)
+		ctx.ShowText(strconv.Itoa(i))
+	}
+	for i := 0; i < gui.ScreenHeight; i += 50 {
+		ctx.MoveTo(5, float64(i))
+		ctx.ShowText(strconv.Itoa(i))
+	}
 	g.player.Draw(ctx, g.offset)
 	for _, gameObject := range g.gameState {
 		gameObject.Draw(ctx, g.offset)

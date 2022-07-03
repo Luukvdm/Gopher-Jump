@@ -44,23 +44,20 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 
 func (player *Player) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	ctx.SetSourceRGB(255, 0, 0)
-	ctx.Rectangle(player.Location.X+offset.X, player.Location.Y+offset.Y, player.Width, player.Height)
+	ctx.Rectangle(player.Location.X /* +offset.X */, player.Location.Y /* +offset.Y*/, player.Width, player.Height)
 	ctx.Fill()
 }
 
 func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector) {
-	// log.Printf("%f:%f", player.Location.X+offset.X, player.Location.Y+offset.Y)
 	oldLocation := player.Location
 	bounced := false
 
-	if player.Location.Y+player.Height+offset.Y > gui.ScreenHeight {
-		// Player is on the floor
-		player.Location.Y = gui.ScreenHeight - player.Height
+	if player.Location.Y <= 0 {
+		player.Location.Y = 0
 		player.Jump()
 		bounced = true
-	} else if player.Location.Y+offset.Y < 0 {
-		// Player is on the ceiling
-		player.Location.Y = 0
+	} else if player.Location.Y+playerHeight >= gui.ScreenHeight {
+		player.Location.Y = gui.ScreenHeight - playerHeight
 		player.BounceVertical()
 		bounced = true
 	}
@@ -95,11 +92,12 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 
 			// Ignore platforms that aren't below the player
 			// Also don't do anything if the player has already bounced or is going up
-			if !bounced && player.Velocity.Y > 0 && gameObject.Location.Y < (newLoc.Y+player.Height) {
+			if !bounced && player.Velocity.Y < 0 && gameObject.Location.Y > newLoc.Y-player.Height {
 				// Check if the player is currently on a platform
-				if (gameObject.Location.Y) >= (oldLocation.Y+player.Height) && (gameObject.Location.Y) <= (newLoc.Y+player.Height) {
+				objTop := gameObject.Location.Y + gameObject.Height
+				if objTop <= oldLocation.Y && objTop >= newLoc.Y {
 					player.Jump()
-					player.Location.Y = gameObject.Location.Y - player.Height
+					player.Location.Y = gameObject.Location.Y
 					bounced = true
 				}
 			}
@@ -113,8 +111,8 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 
 func (player *Player) Jump() {
 	player.BounceVertical()
-	if player.Velocity.Y <= 0 {
-		player.Velocity.Y = -jumpVelocity
+	if player.Velocity.Y >= 0 {
+		player.Velocity.Y = jumpVelocity
 	}
 }
 

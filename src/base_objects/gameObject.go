@@ -3,7 +3,6 @@ package base_objects
 import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
-	"github.com/luukvdm/jumper/src/gui"
 )
 
 type IAbstractObject interface {
@@ -35,11 +34,15 @@ func NewAbstractObject(id int, location Vector, width float64, height float64, m
 		Height:       height,
 		Velocity:     Vector{},
 		Acceleration: Vector{},
-		Gravity:      Vector{Y: 0.1 * mass},
+		Gravity:      Vector{Y: -0.1 * mass},
 		Mass:         mass,
 		IsPlatform:   isPlatform,
 		Collides:     collides,
 	}
+}
+
+func (obj *AbstractObject) OffsetLoc(offset Vector) Vector {
+	return VectorAdd(obj.Location, offset)
 }
 
 func (obj *AbstractObject) ApplyForce(force Vector) {
@@ -62,10 +65,6 @@ func (obj *AbstractObject) ApplyFriction() {
 
 func (obj *AbstractObject) BounceVertical() {
 	obj.Velocity.Y *= -1
-}
-
-func (obj *AbstractObject) OffsetLocation(offset Vector) (location Vector) {
-	return Vector{Y: offset.Y + (gui.ScreenHeight - location.Y), X: location.X + offset.X}
 }
 
 /* func (obj *AbstractObject) ActualLocation(offset Vector) (location Vector) {

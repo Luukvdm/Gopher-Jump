@@ -23,7 +23,7 @@ func NewPlatform(objId int, x float64, y float64) *Platform {
 func (platform *Platform) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	abstObj := platform.AbstractObject
 	ctx.SetSourceRGB(0, 0, 0)
-	ctx.Rectangle(abstObj.Location.X+offset.X, abstObj.Location.Y+offset.Y, platform.Width, platform.Height)
+	ctx.Rectangle(abstObj.Location.X /*-offset.X*/, abstObj.Location.Y /*-offset.Y*/, platform.Width, platform.Height)
 	ctx.Fill()
 }
 
