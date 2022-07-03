@@ -56,8 +56,8 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 		player.Location.Y = 0
 		player.Jump()
 		bounced = true
-	} else if player.Location.Y+playerHeight >= gui.ScreenHeight {
-		player.Location.Y = gui.ScreenHeight - playerHeight
+	} else if player.Location.Y+playerHeight >= gui.ScreenHeight+offset.Y {
+		player.Location.Y = gui.ScreenHeight + offset.Y - playerHeight
 		player.BounceVertical()
 		bounced = true
 	}

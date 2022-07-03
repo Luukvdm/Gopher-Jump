@@ -5,6 +5,8 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
 	"github.com/luukvdm/jumper/src/base_objects"
 	"github.com/luukvdm/jumper/src/gui"
+	"log"
+	"math/rand"
 	"strconv"
 	"time"
 )
@@ -43,24 +45,27 @@ func NewGame() *Game {
 func (g *Game) Update() {
 	g.player.Update(g.gameState, g.offset)
 
-	scrollBorder := (gui.ScreenHeight + g.offset.Y) * 0.5
-	// log.Printf("border: %f player: %f", scrollBorder, g.player.Location.Y)
+	scrollBorder := (gui.ScreenHeight * 0.5) + g.offset.Y
 	if g.player.Location.Y > scrollBorder {
 		// Scroll the screen up
-		g.offsetTarget.Y = g.player.Location.Y - scrollBorder
-		// log.Printf("player height: %f scroll border: %f scroll with: %f", g.player.Location.Y, scrollBorder, (scrollBorder - g.player.Location.Y))
+		g.offsetTarget.Y = g.player.Location.Y - scrollBorder + g.offset.Y
+		log.Printf("player: %f border: %f target: %f offset: %f", g.player.Location.Y, scrollBorder, g.offsetTarget.Y, g.offset.Y)
 	}
 
 	if g.offsetTarget.Y > g.offset.Y {
 		g.offset.Y += 5
 	}
 
-	// TODO filter out platforms
-	/* lastPlatform := g.gameState[len(g.gameState)-1]
-	if lastPlatform.Location.Y-g.offset.Y < 400 {
-		platform := NewPlatform(2, 400, 800+g.offset.Y)
+	// TODO get only platforms
+	lastPlatform := g.gameState[len(g.gameState)-1]
+	if lastPlatform.Location.Y < (gui.ScreenHeight+g.offset.Y)-200 {
+		// TODO make the platform width a variable for the platform object maybe
+		platformWidth := 200
+		max := gui.ScreenWidth - platformWidth
+		x := rand.Intn(max)
+		platform := NewPlatform(2, float64(x), lastPlatform.Location.Y+200)
 		g.gameState = append(g.gameState, platform.AbstractObject)
-	} */
+	}
 
 	for _, gameObject := range g.gameState {
 		gameObject.Update(g.gameState, g.offset)
@@ -101,14 +106,12 @@ func (g *Game) Tick(ctx *cairo.Context) {
 	g.currentTime = newTime
 	g.accumulator += frameTime
 
-	//fmt.Println("Accumulator: ", g.accumulator, " >= dt: ", g.dt)
 	for g.accumulator >= g.dt {
 		g.Update()
 		g.t += g.dt
 		g.accumulator -= g.dt
 	}
 
-	// alpha := g.accumulator / g.dt
 	g.Draw(ctx)
 }
 
