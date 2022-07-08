@@ -6,6 +6,7 @@ import (
 	"github.com/luukvdm/jumper/src/base_objects"
 	"github.com/luukvdm/jumper/src/gui"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -82,10 +83,16 @@ func (g *Game) Draw(ctx *cairo.Context) {
 	// :(
 	// https://github.com/diamondburned/gotk4/blob/5e908130e58f7314673b10f0c96a0662fcc5a1fa/pkg/cairo/text.go#L39
 
-	g.player.Draw(ctx, g.offset)
 	for _, gameObject := range g.gameState {
 		gameObject.Draw(ctx, g.offset)
 	}
+	g.player.Draw(ctx, g.offset)
+
+	ctx.Transform(&cairo.Matrix{Xx: 1, Yy: -1, Y0: g.offset.Y + gui.ScreenHeight})
+	ctx.SetSourceRGB(255, 0, 0)
+	ctx.MoveTo(gui.ScreenWidth/2, 100-10)
+	ctx.SetFontSize(28)
+	ctx.ShowText(strconv.Itoa(int(g.offset.Y) / 100))
 }
 
 func (g *Game) Tick(ctx *cairo.Context) {
