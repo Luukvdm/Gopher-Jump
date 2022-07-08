@@ -11,7 +11,7 @@ import (
 const (
 	movementStep = 10
 	maxSpeed     = 25
-	jumpVelocity = 11
+	jumpVelocity = 15
 	mass         = 50
 	playerWidth  = 50
 	playerHeight = 50
@@ -53,10 +53,12 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 	bounced := false
 
 	if player.Location.Y <= 0 {
+		// If the player hit the ground
 		player.Location.Y = 0
 		player.Jump()
 		bounced = true
 	} else if player.Location.Y+playerHeight >= gui.ScreenHeight+offset.Y {
+		// If the player hit the ceiling
 		player.Location.Y = gui.ScreenHeight + offset.Y - playerHeight
 		player.BounceVertical()
 		bounced = true
@@ -121,19 +123,9 @@ func (player *Player) HandleKeyPress(keyId uint, state gdk.ModifierType) {
 	case controls.KeyLeft:
 		player.isMovingLeft = true
 		break
-		/*
-			case controls.KeyUp:
-				player.Location.Y -= movementStep
-				break
-		*/
 	case controls.KeyRight:
 		player.isMovingRight = true
 		break
-		/*
-			case controls.KeyDown:
-				player.Location.Y += movementStep
-				break
-		*/
 	}
 }
 

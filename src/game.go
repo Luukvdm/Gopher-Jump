@@ -5,7 +5,6 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
 	"github.com/luukvdm/jumper/src/base_objects"
 	"github.com/luukvdm/jumper/src/gui"
-	"log"
 	"math/rand"
 	"time"
 )
@@ -48,7 +47,6 @@ func (g *Game) Update() {
 	if g.player.Location.Y > scrollBorder {
 		// Scroll the screen up
 		g.offsetTarget.Y = g.player.Location.Y - scrollBorder + g.offset.Y
-		log.Printf("player: %f border: %f target: %f offset: %f", g.player.Location.Y, scrollBorder, g.offsetTarget.Y, g.offset.Y)
 	}
 
 	if g.offsetTarget.Y > g.offset.Y {

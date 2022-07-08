@@ -34,7 +34,7 @@ func NewAbstractObject(id int, location Vector, width float64, height float64, m
 		Height:       height,
 		Velocity:     Vector{},
 		Acceleration: Vector{},
-		Gravity:      Vector{Y: -0.1 * mass},
+		Gravity:      Vector{Y: -0.2 * mass},
 		Mass:         mass,
 		IsPlatform:   isPlatform,
 		Collides:     collides,
