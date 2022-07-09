@@ -13,9 +13,10 @@ func main() {
 	gtk.Init()
 
 	app := gtk.NewApplication(appID, 0)
-	game := src.NewGame()
 	app.ConnectActivate(func() {
-		gui.NewWindow(app, game)
+		win := gui.NewWindow(app)
+		game := src.NewGame()
+		win.LoadWidget(gui.NewGameWidget(win, game))
 	})
 
 	if code := app.Run(os.Args); code > 0 {

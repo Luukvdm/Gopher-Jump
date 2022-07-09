@@ -68,6 +68,11 @@ func (g *Game) Update() {
 	for _, gameObject := range g.gameState {
 		gameObject.Update(g.gameState, g.offset)
 	}
+
+	// Check if the player lost
+	if g.player.Location.Y+g.player.Height < g.offset.Y+gui.ScreenHeight {
+
+	}
 }
 
 func (g *Game) Draw(ctx *cairo.Context) {
