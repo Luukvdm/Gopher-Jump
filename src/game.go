@@ -41,7 +41,7 @@ func NewGame() *Game {
 	return &game
 }
 
-func (g *Game) Update() {
+func (g *Game) UpdateState() {
 	g.player.Update(g.gameState, g.offset)
 
 	scrollBorder := (gui.ScreenHeight * 0.5) + g.offset.Y
@@ -74,8 +74,10 @@ func (g *Game) Update() {
 
 	}
 }
+func (g *Game) DrawArea(ctx *cairo.Context, width, height int) {
+	h := float64(height)
+	w := float64(width)
 
-func (g *Game) Draw(ctx *cairo.Context) {
 	// Move 0,0 point to bottom left, instead of top left
 	ctx.Transform(&cairo.Matrix{
 		Xx: 1,
@@ -83,7 +85,7 @@ func (g *Game) Draw(ctx *cairo.Context) {
 		Xy: 0,
 		Yy: -1,
 		X0: 0,
-		Y0: gui.ScreenHeight + g.offset.Y,
+		Y0: h + g.offset.Y,
 	})
 	// :(
 	// https://github.com/diamondburned/gotk4/blob/5e908130e58f7314673b10f0c96a0662fcc5a1fa/pkg/cairo/text.go#L39
@@ -95,14 +97,14 @@ func (g *Game) Draw(ctx *cairo.Context) {
 
 	// Because cairo_set_font_matrix isn't implemented yet we need to transform the entire context back
 	// otherwise the text would be upside down
-	ctx.Transform(&cairo.Matrix{Xx: 1, Yy: -1, Y0: g.offset.Y + gui.ScreenHeight})
+	ctx.Transform(&cairo.Matrix{Xx: 1, Yy: -1, Y0: g.offset.Y + h})
 	ctx.SetSourceRGB(255, 0, 0)
-	ctx.MoveTo(gui.ScreenWidth/2, 100-10)
+	ctx.MoveTo(w/2, 100-10)
 	ctx.SetFontSize(28)
 	ctx.ShowText(strconv.Itoa(int(g.offset.Y) / 100))
 }
 
-func (g *Game) Tick(ctx *cairo.Context) {
+func (g *Game) Update() {
 	newTime := time.Now().UnixMilli()
 	frameTime := newTime - g.currentTime
 
@@ -110,12 +112,10 @@ func (g *Game) Tick(ctx *cairo.Context) {
 	g.accumulator += frameTime
 
 	for g.accumulator >= g.dt {
-		g.Update()
+		g.UpdateState()
 		g.t += g.dt
 		g.accumulator -= g.dt
 	}
-
-	g.Draw(ctx)
 }
 
 func (g *Game) ProcessKeyPress(keyId uint, state gdk.ModifierType) (ok bool) {

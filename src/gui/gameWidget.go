@@ -8,29 +8,41 @@ import (
 
 type Game interface {
 	KeyHandler
-	Tick(ctx *cairo.Context)
+	Update()
+	DrawArea(ctx *cairo.Context, width, height int)
+}
+
+type GameWidget struct {
+	game Game
+	da   *gtk.DrawingArea
 }
 
 func NewGameWidget(parent JumperWindow, game Game) gtk.Widgetter {
 	// Create GTK drawing area to draw the game on
 	da := gtk.NewDrawingArea()
-	da.AddTickCallback(tick)
 	da.SetSizeRequest(ScreenWidth, ScreenHeight)
+
+	// I'm not super happy with having to use this struct, might refactor later
+	widg := GameWidget{game, da}
 
 	// Setup key controller
 	parent.ConnectKeyEvents(game)
 
 	// Setup draw loop
-	da.SetDrawFunc(func(drawingArea *gtk.DrawingArea, ctx *cairo.Context, width, height int) {
-		game.Tick(ctx)
+	da.AddTickCallback(widg.tick)
+	da.SetDrawFunc(func(_ *gtk.DrawingArea, ctx *cairo.Context, width, height int) {
+		// Having the first (DrawingArea) param in game.go means that gtk becomes a dependency for that package
+		// And it doesn't even use it!
+		game.DrawArea(ctx, width, height)
 	})
 
 	return da
 }
 
-func tick(widGetter gtk.Widgetter, frameClock gdk.FrameClocker) bool {
+func (widg GameWidget) tick(widGetter gtk.Widgetter, frameClock gdk.FrameClocker) bool {
 	switch w := widGetter.(type) {
 	case *gtk.DrawingArea:
+		widg.game.Update()
 		w.QueueDraw()
 	}
 
