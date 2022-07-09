@@ -52,8 +52,8 @@ func NewWindow(app *gtk.Application, game IGame) *Window {
 	return &win
 }
 
-func tick(widgetter gtk.Widgetter, frameClock gdk.FrameClocker) bool {
-	switch w := widgetter.(type) {
+func tick(widGetter gtk.Widgetter, frameClock gdk.FrameClocker) bool {
+	switch w := widGetter.(type) {
 	case *gtk.DrawingArea:
 		w.QueueDraw()
 	}
@@ -68,10 +68,10 @@ func setupEventHandlers(window Window) {
 }
 
 func setupKeyEventHandlers(window Window, controller *gtk.EventControllerKey) {
-	controller.ConnectKeyPressed(func(keyval, keycode uint, state gdk.ModifierType) (ok bool) {
+	controller.ConnectKeyPressed(func(keyVal, keycode uint, state gdk.ModifierType) (ok bool) {
 		return window.Game.ProcessKeyPress(keycode, state)
 	})
-	controller.ConnectKeyReleased(func(keyval, keycode uint, state gdk.ModifierType) {
+	controller.ConnectKeyReleased(func(keyVal, keycode uint, state gdk.ModifierType) {
 		window.Game.ProcessKeyRelease(keycode, state)
 	})
 }

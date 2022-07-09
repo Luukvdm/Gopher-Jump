@@ -36,6 +36,8 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 	if err != nil {
 		log.Fatalln("failed to load gopher.png:", err)
 	}
+	// Pixel buffer is drawn upside down because of transformation matrix
+	// So we flip the image
 	bigGopher = bigGopher.RotateSimple(180)
 	gopher := bigGopher.ScaleSimple(playerWidth, playerHeight, gdkpixbuf.InterpBilinear)
 

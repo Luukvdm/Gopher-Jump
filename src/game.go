@@ -88,6 +88,8 @@ func (g *Game) Draw(ctx *cairo.Context) {
 	}
 	g.player.Draw(ctx, g.offset)
 
+	// Because cairo_set_font_matrix isn't implemented yet we need to transform the entire context back
+	// otherwise the text would be upside down
 	ctx.Transform(&cairo.Matrix{Xx: 1, Yy: -1, Y0: g.offset.Y + gui.ScreenHeight})
 	ctx.SetSourceRGB(255, 0, 0)
 	ctx.MoveTo(gui.ScreenWidth/2, 100-10)
@@ -113,15 +115,9 @@ func (g *Game) Tick(ctx *cairo.Context) {
 
 func (g *Game) ProcessKeyPress(keyId uint, state gdk.ModifierType) (ok bool) {
 	g.player.HandleKeyPress(keyId, state)
-	/* for _, gameObject := range g.gameState {
-		gameObject.HandleKeyPress(keyId, state)
-	} */
 	return true
 }
 
 func (g *Game) ProcessKeyRelease(keyId uint, state gdk.ModifierType) {
 	g.player.HandleKeyRelease(keyId, state)
-	/* for _, gameObject := range g.gameState {
-		gameObject.HandleKeyRelease(keyId, state)
-	} */
 }
