@@ -1,11 +1,15 @@
 package src
 
 import (
+	_ "embed"
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
+	"github.com/diamondburned/gotk4/pkg/gdkpixbuf/v2"
 	"github.com/luukvdm/jumper/src/base_objects"
 	"github.com/luukvdm/jumper/src/controls"
 	"github.com/luukvdm/jumper/src/gui"
+	"github.com/luukvdm/jumper/src/media"
+	"log"
 )
 
 const (
@@ -13,17 +17,28 @@ const (
 	maxSpeed     = 25
 	jumpVelocity = 15
 	mass         = 50
-	playerWidth  = 50
-	playerHeight = 50
+	playerWidth  = 60
+	playerHeight = 75
 )
+
+//go:embed resources/gopher.png
+var gopherPNG []byte
 
 type Player struct {
 	*base_objects.AbstractObject
 	isMovingRight bool
 	isMovingLeft  bool
+	avatar        *gdkpixbuf.Pixbuf
 }
 
 func NewPlayer(objId int, locX float64, locY float64) *Player {
+	bigGopher, err := media.LoadPNG(gopherPNG)
+	if err != nil {
+		log.Fatalln("failed to load gopher.png:", err)
+	}
+	bigGopher = bigGopher.RotateSimple(180)
+	gopher := bigGopher.ScaleSimple(playerWidth, playerHeight, gdkpixbuf.InterpBilinear)
+
 	loc := base_objects.Vector{X: locX, Y: locY}
 	playerObject := base_objects.NewAbstractObject(
 		objId,
@@ -36,6 +51,7 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 		AbstractObject: playerObject,
 		isMovingLeft:   false,
 		isMovingRight:  false,
+		avatar:         gopher,
 	}
 
 	player.AbstractObject.IAbstractObject = &player
@@ -43,9 +59,8 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 }
 
 func (player *Player) Draw(ctx *cairo.Context, offset base_objects.Vector) {
-	ctx.SetSourceRGB(255, 0, 0)
-	ctx.Rectangle(player.Location.X /* +offset.X */, player.Location.Y /* +offset.Y*/, player.Width, player.Height)
-	ctx.Fill()
+	gdk.CairoSetSourcePixbuf(ctx, player.avatar, player.Location.X, player.Location.Y)
+	ctx.Paint()
 }
 
 func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector) {

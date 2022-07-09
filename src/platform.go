@@ -11,7 +11,7 @@ type Platform struct {
 }
 
 func NewPlatform(objId int, x float64, y float64) *Platform {
-	var platformWidth float64 = 200
+	var platformWidth float64 = 150
 	var platformHeight float64 = 25
 
 	platformObject := base_objects.NewAbstractObject(objId, base_objects.Vector{X: x, Y: y}, platformWidth, platformHeight, 10, true, false)
