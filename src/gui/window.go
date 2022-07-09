@@ -16,6 +16,7 @@ const (
 type JumperWindow interface {
 	LoadWidget(widget gtk.Widgetter)
 	ConnectKeyEvents(handler KeyHandler)
+	QuitApp()
 }
 
 func NewWindow(app *gtk.Application) JumperWindow {
@@ -41,4 +42,8 @@ func (window *Window) LoadWidget(widget gtk.Widgetter) {
 func (window *Window) ConnectKeyEvents(handler KeyHandler) {
 	c := CreateKeyController(handler)
 	window.AddController(c)
+}
+
+func (window *Window) QuitApp() {
+	window.Application().Quit()
 }

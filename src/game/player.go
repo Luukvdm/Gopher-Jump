@@ -8,7 +8,6 @@ import (
 	"github.com/luukvdm/jumper/src/controls"
 	base_objects2 "github.com/luukvdm/jumper/src/game/base_objects"
 	"github.com/luukvdm/jumper/src/media"
-	"log"
 )
 
 const (
@@ -20,9 +19,6 @@ const (
 	playerHeight = 75
 )
 
-//go:embed resources/gopher.png
-var gopherPNG []byte
-
 type Player struct {
 	*base_objects2.AbstractObject
 	isMovingRight bool
@@ -31,12 +27,9 @@ type Player struct {
 }
 
 func NewPlayer(objId int, locX float64, locY float64) *Player {
-	bigGopher, err := media.LoadPNG(gopherPNG)
-	if err != nil {
-		log.Fatalln("failed to load gopher.png:", err)
-	}
 	// Pixel buffer is drawn upside down because of transformation matrix
 	// So we flip the image
+	bigGopher := media.JumperPixelBuffs.Gopher
 	bigGopher = bigGopher.RotateSimple(180)
 	gopher := bigGopher.ScaleSimple(playerWidth, playerHeight, gdkpixbuf.InterpBilinear)
 
