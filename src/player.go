@@ -91,9 +91,10 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 	player.ApplyGravity()
 	player.Velocity.Add(player.Acceleration)
 	player.Velocity.Limit(maxSpeed)
-	newLoc := base_objects.VectorAdd(player.Location, player.Velocity)
+	// Set location from velocity
+	player.Location.Add(player.Velocity)
 
-	// Check if moving from the old location to the new location collides with any other game object
+	// Check if new location collides with any other game object
 	for _, gameObject := range objects {
 		// Don't collide with yourself
 		if gameObject.Id == player.Id {
@@ -104,26 +105,25 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 			// TODO
 		} else if gameObject.IsPlatform {
 			// Ignore platforms that aren't below the player
-			if gameObject.Location.X > (newLoc.X+(player.Width)) || (gameObject.Width+gameObject.Location.X) < newLoc.X {
+			if gameObject.Location.X > (player.Location.X+(player.Width)) || (gameObject.Width+gameObject.Location.X) < player.Location.X {
 				// TODO continue the for loop in a cleaner way
 				continue
 			}
 
 			// Ignore platforms that aren't below the player
 			// Also don't do anything if the player has already bounced or is going up
-			if !bounced && player.Velocity.Y < 0 && gameObject.Location.Y > newLoc.Y-player.Height {
+			if !bounced && player.Velocity.Y < 0 && gameObject.Location.Y > player.Location.Y-player.Height {
 				// Check if the player is currently on a platform
 				objTop := gameObject.Location.Y + gameObject.Height
-				if objTop <= oldLocation.Y && objTop >= newLoc.Y {
+				if objTop <= oldLocation.Y && objTop >= player.Location.Y {
 					player.Jump()
-					player.Location.Y = gameObject.Location.Y
+					player.Location.Y = gameObject.Location.Y + gameObject.Height
 					bounced = true
 				}
 			}
 		}
 	}
 
-	player.Location.Add(player.Velocity)
 	// Clear acceleration
 	player.Acceleration.MultiplyByScalar(0)
 }
