@@ -1,13 +1,12 @@
-package src
+package game
 
 import (
 	_ "embed"
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
 	"github.com/diamondburned/gotk4/pkg/gdkpixbuf/v2"
-	"github.com/luukvdm/jumper/src/base_objects"
 	"github.com/luukvdm/jumper/src/controls"
-	"github.com/luukvdm/jumper/src/gui"
+	base_objects2 "github.com/luukvdm/jumper/src/game/base_objects"
 	"github.com/luukvdm/jumper/src/media"
 	"log"
 )
@@ -25,7 +24,7 @@ const (
 var gopherPNG []byte
 
 type Player struct {
-	*base_objects.AbstractObject
+	*base_objects2.AbstractObject
 	isMovingRight bool
 	isMovingLeft  bool
 	avatar        *gdkpixbuf.Pixbuf
@@ -41,8 +40,8 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 	bigGopher = bigGopher.RotateSimple(180)
 	gopher := bigGopher.ScaleSimple(playerWidth, playerHeight, gdkpixbuf.InterpBilinear)
 
-	loc := base_objects.Vector{X: locX, Y: locY}
-	playerObject := base_objects.NewAbstractObject(
+	loc := base_objects2.Vector{X: locX, Y: locY}
+	playerObject := base_objects2.NewAbstractObject(
 		objId,
 		loc,
 		playerWidth, playerHeight,
@@ -60,12 +59,12 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 	return &player
 }
 
-func (player *Player) Draw(ctx *cairo.Context, offset base_objects.Vector) {
+func (player *Player) Draw(ctx *cairo.Context, offset base_objects2.Vector) {
 	gdk.CairoSetSourcePixbuf(ctx, player.avatar, player.Location.X, player.Location.Y)
 	ctx.Paint()
 }
 
-func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector) {
+func (player *Player) Update(objects []*base_objects2.AbstractObject, offset base_objects2.Vector, screenHeight, screenWidth float64) {
 	oldLocation := player.Location
 	bounced := false
 
@@ -74,9 +73,9 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 		player.Location.Y = 0
 		player.Jump()
 		bounced = true
-	} else if player.Location.Y+playerHeight >= gui.ScreenHeight+offset.Y {
+	} else if player.Location.Y+playerHeight >= screenHeight+offset.Y {
 		// If the player hit the ceiling
-		player.Location.Y = gui.ScreenHeight + offset.Y - playerHeight
+		player.Location.Y = screenHeight + offset.Y - playerHeight
 		player.BounceVertical()
 		bounced = true
 	}

@@ -26,7 +26,7 @@ func NewWindow(app *gtk.Application) JumperWindow {
 	appWin.SetResizable(false)
 	appWin.Show()
 
-	// Create game instance
+	// Create gameCallbacks instance
 	win := Window{appWin}
 
 	return &win

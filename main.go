@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
-	"github.com/luukvdm/jumper/src"
 	"github.com/luukvdm/jumper/src/gui"
 	"os"
 )
@@ -15,8 +14,7 @@ func main() {
 	app := gtk.NewApplication(appID, 0)
 	app.ConnectActivate(func() {
 		win := gui.NewWindow(app)
-		game := src.NewGame()
-		win.LoadWidget(gui.NewGameWidget(win, game))
+		win.LoadWidget(gui.NewMenuWidget(win))
 	})
 
 	if code := app.Run(os.Args); code > 0 {

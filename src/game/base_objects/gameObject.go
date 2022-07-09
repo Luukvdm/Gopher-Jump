@@ -7,7 +7,7 @@ import (
 
 type IAbstractObject interface {
 	Draw(ctx *cairo.Context, offset Vector)
-	Update(objects []*AbstractObject, offset Vector)
+	Update(objects []*AbstractObject, offset Vector, screenWidth, screenHeight float64)
 	HandleKeyPress(keyId uint, state gdk.ModifierType)
 	HandleKeyRelease(keyId uint, state gdk.ModifierType)
 }

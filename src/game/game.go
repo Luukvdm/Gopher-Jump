@@ -1,10 +1,9 @@
-package src
+package game
 
 import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
-	"github.com/luukvdm/jumper/src/base_objects"
-	"github.com/luukvdm/jumper/src/gui"
+	base_objects2 "github.com/luukvdm/jumper/src/game/base_objects"
 	"math/rand"
 	"strconv"
 	"time"
@@ -13,13 +12,13 @@ import (
 type Game struct {
 	FPS          int64
 	player       *Player
-	gameState    []*base_objects.AbstractObject
+	gameState    []*base_objects2.AbstractObject
 	currentTime  int64
 	accumulator  int64
 	dt           int64
 	t            int64
-	offsetTarget base_objects.Vector
-	offset       base_objects.Vector
+	offsetTarget base_objects2.Vector
+	offset       base_objects2.Vector
 }
 
 func NewGame() *Game {
@@ -41,10 +40,13 @@ func NewGame() *Game {
 	return &game
 }
 
-func (g *Game) UpdateState() {
-	g.player.Update(g.gameState, g.offset)
+func (g *Game) UpdateState(screenWidth, screenHeight int) {
+	w := float64(screenWidth)
+	h := float64(screenHeight)
 
-	scrollBorder := (gui.ScreenHeight * 0.5) + g.offset.Y
+	g.player.Update(g.gameState, g.offset, w, h)
+
+	scrollBorder := (h * 0.5) + g.offset.Y
 	if g.player.Location.Y > scrollBorder {
 		// Scroll the screen up
 		g.offsetTarget.Y = g.player.Location.Y - scrollBorder + g.offset.Y
@@ -56,22 +58,23 @@ func (g *Game) UpdateState() {
 
 	// TODO get only platforms
 	lastPlatform := g.gameState[len(g.gameState)-1]
-	if lastPlatform.Location.Y < (gui.ScreenHeight+g.offset.Y)-200 {
+	if lastPlatform.Location.Y < (h+g.offset.Y)-200 {
 		// TODO make the platform width a variable for the platform object maybe
 		platformWidth := 200
-		max := gui.ScreenWidth - platformWidth
+		max := screenWidth - platformWidth
 		x := rand.Intn(max)
 		platform := NewPlatform(2, float64(x), lastPlatform.Location.Y+200)
 		g.gameState = append(g.gameState, platform.AbstractObject)
 	}
 
 	for _, gameObject := range g.gameState {
-		gameObject.Update(g.gameState, g.offset)
+		gameObject.Update(g.gameState, g.offset, w, h)
 	}
 
 	// Check if the player lost
-	if g.player.Location.Y+g.player.Height < g.offset.Y+gui.ScreenHeight {
+	if g.player.Location.Y+g.player.Height < g.offset.Y+h {
 
+		// win.LoadWidget(gui.NewMenuWidget(win))
 	}
 }
 func (g *Game) DrawArea(ctx *cairo.Context, width, height int) {
@@ -104,7 +107,7 @@ func (g *Game) DrawArea(ctx *cairo.Context, width, height int) {
 	ctx.ShowText(strconv.Itoa(int(g.offset.Y) / 100))
 }
 
-func (g *Game) Update() {
+func (g *Game) Update(screenWidth, screenHeight int) {
 	newTime := time.Now().UnixMilli()
 	frameTime := newTime - g.currentTime
 
@@ -112,7 +115,7 @@ func (g *Game) Update() {
 	g.accumulator += frameTime
 
 	for g.accumulator >= g.dt {
-		g.UpdateState()
+		g.UpdateState(screenWidth, screenHeight)
 		g.t += g.dt
 		g.accumulator -= g.dt
 	}
