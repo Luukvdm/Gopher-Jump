@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	movementStep = 10
+	movementStep = 6
 	maxSpeed     = 25
 	jumpVelocity = 15
 	mass         = 50
