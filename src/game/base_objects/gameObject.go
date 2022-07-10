@@ -66,3 +66,7 @@ func (obj *AbstractObject) ApplyFriction() {
 func (obj *AbstractObject) BounceVertical() {
 	obj.Velocity.Y *= -1
 }
+
+func (obj *AbstractObject) BounceHorizontal() {
+	obj.Velocity.X *= -1
+}

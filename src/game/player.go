@@ -1,26 +1,25 @@
 package game
 
 import (
-	_ "embed"
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
 	"github.com/diamondburned/gotk4/pkg/gdkpixbuf/v2"
 	"github.com/luukvdm/jumper/src/controls"
-	base_objects2 "github.com/luukvdm/jumper/src/game/base_objects"
+	"github.com/luukvdm/jumper/src/game/base_objects"
 	"github.com/luukvdm/jumper/src/media"
 )
 
 const (
-	movementStep = 6
-	maxSpeed     = 25
-	jumpVelocity = 15
-	mass         = 50
-	playerWidth  = 60
-	playerHeight = 75
+	movementStep   = 6
+	maxPlayerSpeed = 25
+	jumpVelocity   = 15
+	mass           = 50
+	playerWidth    = 60
+	playerHeight   = 75
 )
 
 type Player struct {
-	*base_objects2.AbstractObject
+	*base_objects.AbstractObject
 	isMovingRight bool
 	isMovingLeft  bool
 	avatar        *gdkpixbuf.Pixbuf
@@ -33,8 +32,8 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 	bigGopher = bigGopher.RotateSimple(180)
 	gopher := bigGopher.ScaleSimple(playerWidth, playerHeight, gdkpixbuf.InterpBilinear)
 
-	loc := base_objects2.Vector{X: locX, Y: locY}
-	playerObject := base_objects2.NewAbstractObject(
+	loc := base_objects.Vector{X: locX, Y: locY}
+	playerObject := base_objects.NewAbstractObject(
 		objId,
 		loc,
 		playerWidth, playerHeight,
@@ -52,12 +51,12 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 	return &player
 }
 
-func (player *Player) Draw(ctx *cairo.Context, offset base_objects2.Vector) {
+func (player *Player) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	gdk.CairoSetSourcePixbuf(ctx, player.avatar, player.Location.X, player.Location.Y)
 	ctx.Paint()
 }
 
-func (player *Player) Update(objects []*base_objects2.AbstractObject, offset base_objects2.Vector, screenHeight, screenWidth float64) {
+func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector, screenHeight, screenWidth float64) {
 	oldLocation := player.Location
 	bounced := false
 
@@ -82,7 +81,7 @@ func (player *Player) Update(objects []*base_objects2.AbstractObject, offset bas
 
 	player.ApplyGravity()
 	player.Velocity.Add(player.Acceleration)
-	player.Velocity.Limit(maxSpeed)
+	player.Velocity.Limit(maxPlayerSpeed)
 	// Set location from velocity
 	player.Location.Add(player.Velocity)
 

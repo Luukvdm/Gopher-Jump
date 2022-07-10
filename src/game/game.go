@@ -3,7 +3,7 @@ package game
 import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
-	base_objects2 "github.com/luukvdm/jumper/src/game/base_objects"
+	"github.com/luukvdm/jumper/src/game/base_objects"
 	"math/rand"
 	"strconv"
 	"time"
@@ -12,13 +12,13 @@ import (
 type Game struct {
 	FPS          int64
 	player       *Player
-	gameState    []*base_objects2.AbstractObject
+	gameState    []*base_objects.AbstractObject
 	currentTime  int64
 	accumulator  int64
 	dt           int64
 	t            int64
-	offsetTarget base_objects2.Vector
-	offset       base_objects2.Vector
+	offsetTarget base_objects.Vector
+	offset       base_objects.Vector
 }
 
 func NewGame() *Game {
@@ -59,12 +59,7 @@ func (g *Game) UpdateState(screenWidth, screenHeight int) {
 	// TODO get only platforms
 	lastPlatform := g.gameState[len(g.gameState)-1]
 	if lastPlatform.Location.Y < (h+g.offset.Y)-200 {
-		// TODO make the platform width a variable for the platform object maybe
-		platformWidth := 200
-		max := screenWidth - platformWidth
-		x := rand.Intn(max)
-		platform := NewPlatform(2, float64(x), lastPlatform.Location.Y+200)
-		g.gameState = append(g.gameState, platform.AbstractObject)
+		g.spawnNewPlatform(lastPlatform, screenWidth, screenHeight)
 	}
 
 	for _, gameObject := range g.gameState {
@@ -128,4 +123,21 @@ func (g *Game) ProcessKeyPress(keyId uint, state gdk.ModifierType) (ok bool) {
 
 func (g *Game) ProcessKeyRelease(keyId uint, state gdk.ModifierType) {
 	g.player.HandleKeyRelease(keyId, state)
+}
+
+func (g *Game) spawnNewPlatform(lastPlatform *base_objects.AbstractObject, screenWidth, screenHeight int) {
+	// TODO make the platform width a variable for the platform object maybe
+	platformWidth := 200
+	max := screenWidth - platformWidth
+	x := rand.Intn(max)
+
+	var platform *Platform
+	diffMultiplier := int(g.offset.Y / 1000)
+	if rand.Intn(100) < diffMultiplier {
+		platform = NewMovingPlatform(2, float64(x), lastPlatform.Location.Y+200)
+	} else {
+		platform = NewPlatform(2, float64(x), lastPlatform.Location.Y+200)
+	}
+
+	g.gameState = append(g.gameState, platform.AbstractObject)
 }
