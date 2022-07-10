@@ -22,8 +22,7 @@ func NewPlatform(objId int, x, y float64) *Platform {
 
 func NewMovingPlatform(objId int, x, y float64) *Platform {
 	p := newPlatform(objId, x, y, base_objects.NewRGBA(0, 0, 255, 255))
-	// p.Velocity.X = 3
-	p.Acceleration.X = 3
+	p.Velocity.X = 3
 	return p
 }
 
@@ -51,7 +50,11 @@ func (platform *Platform) Update(objects []*base_objects.AbstractObject, screen 
 	platform.Location.Add(platform.Velocity)
 	platform.Acceleration.MultiplyByScalar(0)
 
-	if platform.Location.X+platform.Width > screen.Right-bounceMargin || platform.Location.X < screen.Left+bounceMargin {
+	if platform.Location.X < screen.Left+bounceMargin {
+		platform.Location.X = screen.Left + bounceMargin
+		platform.BounceHorizontal()
+	} else if platform.Location.X+platform.Width > screen.Right-bounceMargin {
+		platform.Location.X = screen.Right - bounceMargin - platform.Width
 		platform.BounceHorizontal()
 	}
 }
