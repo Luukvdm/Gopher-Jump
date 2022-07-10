@@ -37,7 +37,7 @@ func newPlatform(objId int, x float64, y float64, color base_objects.RGBA) *Plat
 	platform.AbstractObject.IAbstractObject = &platform
 	return &platform
 }
-func (platform *Platform) Draw(ctx *cairo.Context, offset base_objects.Vector) {
+func (platform *Platform) Draw(ctx *cairo.Context, screen base_objects.ScreenInfo) {
 	abstObj := platform.AbstractObject
 	ctx.SetSourceRGB(0, 0, 0)
 	ctx.SetSourceRGBA(platform.color.R, platform.color.G, platform.color.B, platform.color.A)
@@ -45,13 +45,13 @@ func (platform *Platform) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	ctx.Fill()
 }
 
-func (platform *Platform) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector, screenWidth, screenHeight float64) {
+func (platform *Platform) Update(objects []*base_objects.AbstractObject, screen base_objects.ScreenInfo) {
 	platform.Velocity.Add(platform.Acceleration)
 	platform.Velocity.Limit(maxPlatformSpeed)
 	platform.Location.Add(platform.Velocity)
 	platform.Acceleration.MultiplyByScalar(0)
 
-	if platform.Location.X+platform.Width > screenWidth-bounceMargin || platform.Location.X < bounceMargin {
+	if platform.Location.X+platform.Width > screen.Right-bounceMargin || platform.Location.X < screen.Left+bounceMargin {
 		platform.BounceHorizontal()
 	}
 }

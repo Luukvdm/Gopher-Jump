@@ -51,23 +51,23 @@ func NewPlayer(objId int, locX float64, locY float64) *Player {
 	return &player
 }
 
-func (player *Player) Draw(ctx *cairo.Context, offset base_objects.Vector) {
+func (player *Player) Draw(ctx *cairo.Context, screen base_objects.ScreenInfo) {
 	gdk.CairoSetSourcePixbuf(ctx, player.avatar, player.Location.X, player.Location.Y)
 	ctx.Paint()
 }
 
-func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector, screenWidth, screenHeight float64) {
+func (player *Player) Update(objects []*base_objects.AbstractObject, screen base_objects.ScreenInfo) {
 	oldLocation := player.Location
 	bounced := false
 
-	if player.Location.Y <= 0 {
+	if player.Location.Y <= screen.Left {
 		// If the player hit the ground
-		player.Location.Y = 0
+		player.Location.Y = screen.Left
 		player.Jump()
 		bounced = true
-	} else if player.Location.Y+playerHeight >= screenHeight+offset.Y {
+	} else if player.Location.Y+playerHeight >= screen.Top {
 		// If the player hit the ceiling
-		player.Location.Y = screenHeight + offset.Y - playerHeight
+		player.Location.Y = float64(screen.Top) - playerHeight
 		player.BounceVertical()
 		bounced = true
 	}
@@ -115,10 +115,10 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 		}
 	}
 
-	if player.Location.X < 0 {
-		player.Location.X = 0
-	} else if player.Location.X+player.Width > screenWidth {
-		player.Location.X = screenWidth - player.Width
+	if player.Location.X < screen.Left {
+		player.Location.X = screen.Left
+	} else if player.Location.X+player.Width > screen.Right {
+		player.Location.X = screen.Right - player.Width
 	}
 
 	// Clear acceleration

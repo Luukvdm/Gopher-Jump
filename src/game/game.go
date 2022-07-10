@@ -41,15 +41,14 @@ func NewGame() *Game {
 }
 
 func (g *Game) UpdateState(screenWidth, screenHeight int) {
-	w := float64(screenWidth)
-	h := float64(screenHeight)
+	screen := g.getScreenInfo(screenWidth, screenHeight)
 
-	g.player.Update(g.gameState, g.offset, w, h)
+	g.player.Update(g.gameState, screen)
 
-	scrollBorder := (h * 0.5) + g.offset.Y
+	scrollBorder := screen.Top - (screen.Height / 2)
 	if g.player.Location.Y > scrollBorder {
 		// Scroll the screen up
-		g.offsetTarget.Y = g.player.Location.Y - scrollBorder + g.offset.Y
+		g.offsetTarget.Y = g.player.Location.Y - scrollBorder + screen.Bottom
 	}
 
 	if g.offsetTarget.Y > g.offset.Y {
@@ -58,23 +57,22 @@ func (g *Game) UpdateState(screenWidth, screenHeight int) {
 
 	// TODO get only platforms
 	lastPlatform := g.gameState[len(g.gameState)-1]
-	if lastPlatform.Location.Y < (h+g.offset.Y)-200 {
+	if lastPlatform.Location.Y < screen.Top-200 {
 		g.spawnNewPlatform(lastPlatform, screenWidth, screenHeight)
 	}
 
 	for _, gameObject := range g.gameState {
-		gameObject.Update(g.gameState, g.offset, w, h)
+		gameObject.Update(g.gameState, screen)
 	}
 
 	// Check if the player lost
-	if g.player.Location.Y+g.player.Height < g.offset.Y+h {
+	if g.player.Location.Y+g.player.Height < screen.Top {
 
 		// win.LoadWidget(gui.NewMenuWidget(win))
 	}
 }
-func (g *Game) DrawArea(ctx *cairo.Context, width, height int) {
-	h := float64(height)
-	w := float64(width)
+func (g *Game) DrawArea(ctx *cairo.Context, screenWidth, screenHeight int) {
+	screen := g.getScreenInfo(screenWidth, screenHeight)
 
 	// Move 0,0 point to bottom left, instead of top left
 	ctx.Transform(&cairo.Matrix{
@@ -83,21 +81,21 @@ func (g *Game) DrawArea(ctx *cairo.Context, width, height int) {
 		Xy: 0,
 		Yy: -1,
 		X0: 0,
-		Y0: h + g.offset.Y,
+		Y0: screen.Top,
 	})
 	// :(
 	// https://github.com/diamondburned/gotk4/blob/5e908130e58f7314673b10f0c96a0662fcc5a1fa/pkg/cairo/text.go#L39
 
 	for _, gameObject := range g.gameState {
-		gameObject.Draw(ctx, g.offset)
+		gameObject.Draw(ctx, screen)
 	}
-	g.player.Draw(ctx, g.offset)
+	g.player.Draw(ctx, screen)
 
 	// Because cairo_set_font_matrix isn't implemented yet we need to transform the entire context back
 	// otherwise the text would be upside down
-	ctx.Transform(&cairo.Matrix{Xx: 1, Yy: -1, Y0: g.offset.Y + h})
+	ctx.Transform(&cairo.Matrix{Xx: 1, Yy: -1, Y0: g.offset.Y + screen.Height})
 	ctx.SetSourceRGB(255, 0, 0)
-	ctx.MoveTo(w/2, 100-10)
+	ctx.MoveTo(screen.Width/2, 100-10)
 	ctx.SetFontSize(28)
 	ctx.ShowText(strconv.Itoa(int(g.offset.Y) / 100))
 }
@@ -140,4 +138,18 @@ func (g *Game) spawnNewPlatform(lastPlatform *base_objects.AbstractObject, scree
 	}
 
 	g.gameState = append(g.gameState, platform.AbstractObject)
+}
+
+func (g *Game) getScreenInfo(screenWidth, screenHeight int) base_objects.ScreenInfo {
+	h := float64(screenHeight)
+	w := float64(screenWidth)
+
+	return base_objects.ScreenInfo{
+		Left:   g.offset.X,
+		Right:  g.offset.X + w,
+		Bottom: g.offset.Y,
+		Top:    g.offset.Y + h,
+		Width:  w,
+		Height: h,
+	}
 }

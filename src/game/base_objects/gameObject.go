@@ -6,8 +6,8 @@ import (
 )
 
 type IAbstractObject interface {
-	Draw(ctx *cairo.Context, offset Vector)
-	Update(objects []*AbstractObject, offset Vector, screenWidth, screenHeight float64)
+	Draw(ctx *cairo.Context, screen ScreenInfo)
+	Update(objects []*AbstractObject, screen ScreenInfo)
 	HandleKeyPress(keyId uint, state gdk.ModifierType)
 	HandleKeyRelease(keyId uint, state gdk.ModifierType)
 }
@@ -39,10 +39,6 @@ func NewAbstractObject(id int, location Vector, width float64, height float64, m
 		IsPlatform:   isPlatform,
 		Collides:     collides,
 	}
-}
-
-func (obj *AbstractObject) OffsetLoc(offset Vector) Vector {
-	return VectorAdd(obj.Location, offset)
 }
 
 func (obj *AbstractObject) ApplyForce(force Vector) {
