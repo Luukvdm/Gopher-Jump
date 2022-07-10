@@ -56,7 +56,7 @@ func (player *Player) Draw(ctx *cairo.Context, offset base_objects.Vector) {
 	ctx.Paint()
 }
 
-func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector, screenHeight, screenWidth float64) {
+func (player *Player) Update(objects []*base_objects.AbstractObject, offset base_objects.Vector, screenWidth, screenHeight float64) {
 	oldLocation := player.Location
 	bounced := false
 
@@ -113,6 +113,12 @@ func (player *Player) Update(objects []*base_objects.AbstractObject, offset base
 				}
 			}
 		}
+	}
+
+	if player.Location.X < 0 {
+		player.Location.X = 0
+	} else if player.Location.X+player.Width > screenWidth {
+		player.Location.X = screenWidth - player.Width
 	}
 
 	// Clear acceleration
