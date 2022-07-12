@@ -16,7 +16,7 @@ type GameWidget struct {
 	game gameCallbacks
 }
 
-func NewGameWidget(parent JumperWindow, g gameCallbacks) gtk.Widgetter {
+func NewGameWidget(parent GJumpWindow, g gameCallbacks) gtk.Widgetter {
 	// Create GTK drawing area to draw the g on
 	da := gtk.NewDrawingArea()
 	da.SetSizeRequest(ScreenWidth, ScreenHeight)

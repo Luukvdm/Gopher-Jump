@@ -3,18 +3,18 @@ package gui
 import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	"github.com/diamondburned/gotk4/pkg/pango"
-	"github.com/luukvdm/jumper/src/game"
-	"github.com/luukvdm/jumper/src/media"
+	"github.com/luukvdm/gopher-jump/src/game"
+	"github.com/luukvdm/gopher-jump/src/media"
 )
 
-func NewMenuWidget(parent JumperWindow) gtk.Widgetter {
+func NewMenuWidget(parent GJumpWindow) gtk.Widgetter {
 	// Create GTK drawing area to draw the g on
 	box := gtk.NewBox(gtk.OrientationVertical, 50)
 	box.SetMarginTop(50)
 	box.SetMarginStart(50)
 	box.SetMarginEnd(50)
 
-	gopher := media.JumperPixelBuffs.Gopher
+	gopher := media.GJumpPixelBuffs.Gopher
 	// gopher.ScaleSimple(60, 75, gdkpixbuf.InterpBilinear)
 	img := gtk.NewImageFromPixbuf(gopher)
 	img.SetSizeRequest(120, 150)

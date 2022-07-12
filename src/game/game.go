@@ -3,7 +3,7 @@ package game
 import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
-	"github.com/luukvdm/jumper/src/game/base_objects"
+	"github.com/luukvdm/gopher-jump/src/game/base_objects"
 	"math/rand"
 	"strconv"
 	"time"

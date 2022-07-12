@@ -13,16 +13,16 @@ const (
 	ScreenHeight = 1024
 )
 
-type JumperWindow interface {
+type GJumpWindow interface {
 	LoadWidget(widget gtk.Widgetter)
 	ConnectKeyEvents(handler KeyHandler)
 	QuitApp()
 }
 
-func NewWindow(app *gtk.Application) JumperWindow {
+func NewWindow(app *gtk.Application) GJumpWindow {
 	// Create GTK window
 	appWin := gtk.NewApplicationWindow(app)
-	appWin.SetTitle("Jumper")
+	appWin.SetTitle("Gopher-Jump")
 	appWin.SetSizeRequest(ScreenWidth, ScreenHeight)
 	appWin.SetResizable(false)
 	appWin.Show()

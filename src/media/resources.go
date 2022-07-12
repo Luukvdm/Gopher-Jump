@@ -14,7 +14,7 @@ type PixelBuffs struct {
 	Gopher *gdkpixbuf.Pixbuf
 }
 
-var JumperPixelBuffs PixelBuffs
+var GJumpPixelBuffs PixelBuffs
 
 func init() {
 	gopher, err := LoadPNG(GopherPNG)
@@ -22,7 +22,7 @@ func init() {
 		log.Fatalln("failed to load gopher.png:", err)
 	}
 
-	JumperPixelBuffs = PixelBuffs{
+	GJumpPixelBuffs = PixelBuffs{
 		gopher,
 	}
 }

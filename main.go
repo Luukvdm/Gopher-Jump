@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
-	"github.com/luukvdm/jumper/src/gui"
+	"github.com/luukvdm/gopher-jump/src/gui"
 	"os"
 )
 
-const appID = "com.github.luukvdm.jumper"
+const appID = "com.github.luukvdm.gopher-jump"
 
 func main() {
 	gtk.Init()

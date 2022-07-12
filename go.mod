@@ -1,4 +1,4 @@
-module github.com/luukvdm/jumper
+module github.com/luukvdm/gopher-jump
 
 go 1.18
 

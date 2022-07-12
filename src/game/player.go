@@ -4,9 +4,9 @@ import (
 	"github.com/diamondburned/gotk4/pkg/cairo"
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
 	"github.com/diamondburned/gotk4/pkg/gdkpixbuf/v2"
-	"github.com/luukvdm/jumper/src/controls"
-	"github.com/luukvdm/jumper/src/game/base_objects"
-	"github.com/luukvdm/jumper/src/media"
+	"github.com/luukvdm/gopher-jump/src/controls"
+	"github.com/luukvdm/gopher-jump/src/game/base_objects"
+	"github.com/luukvdm/gopher-jump/src/media"
 )
 
 const (
@@ -28,7 +28,7 @@ type Player struct {
 func NewPlayer(objId int, locX float64, locY float64) *Player {
 	// Pixel buffer is drawn upside down because of transformation matrix
 	// So we flip the image
-	bigGopher := media.JumperPixelBuffs.Gopher
+	bigGopher := media.GJumpPixelBuffs.Gopher
 	bigGopher = bigGopher.RotateSimple(180)
 	gopher := bigGopher.ScaleSimple(playerWidth, playerHeight, gdkpixbuf.InterpBilinear)
 
