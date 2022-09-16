@@ -5,4 +5,6 @@ This project uses GTK with bindings provided by [gotk4](https://github.com/diamo
 I wanted to write as much as possible from scratch without libraries.
 So aside from gotk4 this project has no, and will not get any other dependencies.
 
-<img align="center" height="663" src="img/gameplay.png">
+<div align="center">
+  <img height="663" src="img/gameplay.png">
+</div>
